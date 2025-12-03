@@ -101,7 +101,9 @@ pat = your-personal-access-token-here
    - Click on your profile icon in the top-right corner
    - Select "Profile" or "Account Settings"
    - Look for "Personal Access Tokens" in the left sidebar or security settings
-   - Or directly navigate to: `https://your-jira-server.com/secure/ViewProfile.jspa` and click "Personal Access Tokens"
+   - **Direct links:**
+     - Red Hat JIRA: https://issues.redhat.com/secure/PersonalAccessTokens.jspa
+     - Generic JIRA: `https://your-jira-server.com/secure/PersonalAccessTokens.jspa`
 
 3. **Create a new token**
    - Click "Create token" or "Generate new token"
