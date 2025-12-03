@@ -15,6 +15,9 @@ pip install -e .
 # Run the CLI
 jira-gate --help
 
+# Interactive setup (recommended for first-time users)
+jira-gate config init --interactive
+
 # Test connection (requires config file)
 jira-gate test
 ```
@@ -60,10 +63,23 @@ All commands follow the pattern of calling `get_jira_client()` first, which hand
 
 ### Configuration Management
 
-The `Config` class handles all config file operations:
-- Template generation with both auth methods documented
-- Validation that ensures either PAT or email+api_token is provided (but not both required)
-- Path resolution supporting both default and custom config locations
+The `Config` class handles all config file operations with two creation modes:
+
+1. **Interactive Setup** (`config.py:114`): The `create_interactive()` method:
+   - Takes server URL and auth method as parameters
+   - Accepts credentials (PAT or email+api_token) based on chosen method
+   - Creates a ready-to-use config file with actual credentials
+   - Used by `jira-gate config init --interactive`
+
+2. **Template Mode** (`config.py:77`): The `create_template()` method:
+   - Generates a config file with commented examples
+   - User must manually edit and add credentials
+   - Used by `jira-gate config init` (without --interactive)
+
+Both modes:
+- Validate that either PAT or email+api_token is provided (but not both required)
+- Support both default (`~/.jira-gate.config`) and custom config paths
+- Respect the `--force` flag to overwrite existing files
 
 ## Important Patterns
 
@@ -76,9 +92,18 @@ When adding new CLI commands:
 4. Call `sys.exit(1)` on errors after displaying message
 5. Add `--config` option to support custom config paths
 
+### Interactive CLI Prompts
+
+The interactive setup (`cli.py:63`) uses Click's prompt features:
+- `click.prompt()` for text input with type validation
+- `type=click.Choice()` for multiple-choice selections
+- `hide_input=True` for sensitive credentials (tokens, passwords)
+- Contextual help messages shown before prompts to guide users
+
 ### Config File Security
 
 Config files contain sensitive credentials and are excluded via `.gitignore`:
 - Pattern `*.config` blocks all config files
 - Pattern `.jira-gate.config` specifically blocks default location
 - Template file `.jira-gate.config.template` is version controlled as documentation
+- Interactive setup uses `hide_input=True` to prevent credential exposure in terminal

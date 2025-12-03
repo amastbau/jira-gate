@@ -5,6 +5,7 @@ A Python CLI tool to interact with the JIRA API.
 ## Features
 
 - Simple configuration using a config file
+- Interactive setup wizard for easy configuration
 - Secure credential storage
 - Multiple authentication methods (PAT or Email + API Token)
 - Full JIRA API integration
@@ -12,39 +13,72 @@ A Python CLI tool to interact with the JIRA API.
 
 ## Installation
 
+### From PyPI (Recommended)
+
+```bash
+# Install in a Python virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install git+https://github.com/amastbau/jira-gate.git
+```
+
 ### From Source
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/amastbau/jira-gate.git
 cd jira-gate
 
 # Install in development mode
 pip install -e .
 ```
 
-### Using pip
+## Quick Start
+
+After installation, run the interactive setup:
 
 ```bash
-pip install -r requirements.txt
-pip install -e .
+jira-gate config init --interactive
+```
+
+This will guide you through configuring your JIRA connection. Then test it:
+
+```bash
+jira-gate test
 ```
 
 ## Configuration
 
-### 1. Initialize Configuration
+### Option 1: Interactive Setup (Recommended)
 
-Run the following command to create a configuration file:
+Run the interactive configuration wizard:
+
+```bash
+jira-gate config init --interactive
+```
+
+or use the short form:
+
+```bash
+jira-gate config init -i
+```
+
+The wizard will prompt you for:
+- JIRA server URL
+- Authentication method (PAT or Email + API Token)
+- Credentials based on your chosen method
+
+### Option 2: Template Configuration
+
+Create a template configuration file to edit manually:
 
 ```bash
 jira-gate config init
 ```
 
-This will create a config file at `~/.jira-gate.config`.
+This will create a template config file at `~/.jira-gate.config`.
 
-### 2. Edit Configuration
-
-Open the config file and add your JIRA credentials. Choose ONE of the following authentication methods:
+Then open the config file and add your JIRA credentials. Choose ONE of the following authentication methods:
 
 #### Option A: Personal Access Token (PAT) - Recommended for JIRA Data Center/Server
 
@@ -87,16 +121,24 @@ jira-gate test
 ### Configuration Commands
 
 ```bash
-# Initialize config file
+# Interactive setup (recommended for first-time setup)
+jira-gate config init --interactive
+jira-gate config init -i
+
+# Create template config file for manual editing
 jira-gate config init
 
 # Initialize with custom path
 jira-gate config init --path /path/to/custom/config
 
-# Overwrite existing config
-jira-gate config init --force
+# Interactive setup with custom path
+jira-gate config init --interactive --path /path/to/custom/config
 
-# Show current configuration (API token is masked)
+# Overwrite existing config (works with both template and interactive modes)
+jira-gate config init --force
+jira-gate config init -i --force
+
+# Show current configuration (credentials are masked)
 jira-gate config show
 ```
 

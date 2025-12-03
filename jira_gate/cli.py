@@ -63,12 +63,60 @@ def config():
 @config.command('init')
 @click.option('--path', default=None, help='Custom config file path')
 @click.option('--force', is_flag=True, help='Overwrite existing config file')
-def config_init(path, force):
+@click.option('--interactive', '-i', is_flag=True, help='Interactive configuration setup')
+def config_init(path, force, interactive):
     """Initialize configuration file"""
     try:
         cfg = Config(path)
-        cfg.create_template(force=force)
-    except FileExistsError as e:
+
+        if interactive:
+            # Interactive mode - prompt for all values
+            click.echo("Welcome to JIRA Gate interactive setup!\n")
+
+            server = click.prompt("JIRA server URL (e.g., https://your-domain.atlassian.net)", type=str)
+
+            click.echo("\nChoose authentication method:")
+            click.echo("  1. Personal Access Token (PAT) - for JIRA Data Center/Server")
+            click.echo("  2. Email + API Token - for JIRA Cloud")
+
+            auth_choice = click.prompt("\nSelect authentication method", type=click.Choice(['1', '2']), default='2')
+
+            if auth_choice == '1':
+                click.echo("\nTo generate a Personal Access Token:")
+                click.echo("  1. Log in to your JIRA instance")
+                click.echo("  2. Go to JIRA Settings > Personal Access Tokens")
+                click.echo("  3. Click 'Create token'\n")
+
+                pat = click.prompt("Enter your Personal Access Token", hide_input=True, type=str)
+
+                cfg.create_interactive(
+                    server=server,
+                    auth_method='pat',
+                    pat=pat,
+                    force=force
+                )
+            else:
+                click.echo("\nTo generate an API Token:")
+                click.echo("  1. Go to https://id.atlassian.com/manage-profile/security/api-tokens")
+                click.echo("  2. Click 'Create API token'\n")
+
+                email = click.prompt("Enter your JIRA account email", type=str)
+                api_token = click.prompt("Enter your API token", hide_input=True, type=str)
+
+                cfg.create_interactive(
+                    server=server,
+                    auth_method='basic',
+                    email=email,
+                    api_token=api_token,
+                    force=force
+                )
+
+            click.echo("\nSetup complete! Test your connection with: jira-gate test")
+        else:
+            # Template mode - create template file
+            cfg.create_template(force=force)
+
+    except (FileExistsError, ValueError) as e:
         click.echo(f"Error: {e}", err=True)
         sys.exit(1)
 

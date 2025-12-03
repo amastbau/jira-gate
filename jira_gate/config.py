@@ -110,3 +110,50 @@ server =
         self.config_path.write_text(template_content)
         print(f"Config template created at: {self.config_path}")
         print("Please edit the file and add your JIRA credentials.")
+
+    def create_interactive(self, server: str, auth_method: str,
+                          email: Optional[str] = None,
+                          api_token: Optional[str] = None,
+                          pat: Optional[str] = None,
+                          force: bool = False) -> None:
+        """Create a configuration file with provided values
+
+        Args:
+            server: JIRA server URL
+            auth_method: Authentication method ('pat' or 'basic')
+            email: Email for basic auth (required if auth_method is 'basic')
+            api_token: API token for basic auth (required if auth_method is 'basic')
+            pat: Personal access token (required if auth_method is 'pat')
+            force: If True, overwrite existing file
+
+        Raises:
+            FileExistsError: If file exists and force is False
+            ValueError: If required fields for auth method are missing
+        """
+        if self.config_path.exists() and not force:
+            raise FileExistsError(
+                f"Config file already exists at {self.config_path}. "
+                f"Use --force to overwrite."
+            )
+
+        if auth_method == 'pat':
+            if not pat:
+                raise ValueError("PAT is required for PAT authentication method")
+            config_content = f"""[jira]
+server = {server}
+pat = {pat}
+"""
+        elif auth_method == 'basic':
+            if not email or not api_token:
+                raise ValueError("Email and API token are required for basic authentication method")
+            config_content = f"""[jira]
+server = {server}
+email = {email}
+api_token = {api_token}
+"""
+        else:
+            raise ValueError(f"Invalid auth_method: {auth_method}. Must be 'pat' or 'basic'")
+
+        self.config_path.write_text(config_content)
+        print(f"\nConfiguration file created at: {self.config_path}")
+        print("You can now use jira-gate commands.")
