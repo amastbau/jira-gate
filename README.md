@@ -82,17 +82,60 @@ Then open the config file and add your JIRA credentials. Choose ONE of the follo
 
 #### Option A: Personal Access Token (PAT) - Recommended for JIRA Data Center/Server
 
+Personal Access Tokens are the preferred authentication method for self-hosted JIRA instances (JIRA Data Center/Server) and some enterprise JIRA deployments.
+
+**Configuration:**
+
 ```ini
 [jira]
 server = https://your-jira-server.com
 pat = your-personal-access-token-here
 ```
 
-To generate a Personal Access Token:
-1. Log in to your JIRA instance
-2. Go to JIRA Settings > Personal Access Tokens
-3. Click "Create token"
-4. Copy the token and paste it in the config file
+**How to Generate a Personal Access Token:**
+
+1. **Log in to your JIRA instance**
+   - Navigate to your JIRA server (e.g., `https://issues.redhat.com` or your company's JIRA URL)
+
+2. **Access Personal Access Token settings**
+   - Click on your profile icon in the top-right corner
+   - Select "Profile" or "Account Settings"
+   - Look for "Personal Access Tokens" in the left sidebar or security settings
+   - Or directly navigate to: `https://your-jira-server.com/secure/ViewProfile.jspa` and click "Personal Access Tokens"
+
+3. **Create a new token**
+   - Click "Create token" or "Generate new token"
+   - Enter a descriptive name (e.g., "jira-gate CLI")
+   - Set an expiration date (recommended for security)
+   - Click "Create" or "Generate"
+
+4. **Copy the token immediately**
+   - **Important**: Copy the token immediately as it will only be shown once
+   - Store it securely - you won't be able to view it again
+   - If you lose it, you'll need to generate a new token
+
+5. **Add to your config file**
+   - Paste the token in your `~/.jira-gate.config` file
+   - Or use interactive setup: `jira-gate config init -i`
+
+**Example for Red Hat JIRA:**
+
+```ini
+[jira]
+server = https://issues.redhat.com
+pat = your-personal-access-token-here
+```
+
+**Token Permissions:**
+- Ensure the token has sufficient permissions for the operations you need
+- Typically requires: read/write access to issues, projects, and comments
+- Check with your JIRA administrator if you encounter permission errors
+
+**Security Best Practices:**
+- Never share your PAT or commit it to version control
+- Use token expiration dates and rotate tokens regularly
+- Revoke tokens that are no longer needed
+- Store the config file with restricted permissions: `chmod 600 ~/.jira-gate.config`
 
 #### Option B: Email + API Token - Common for JIRA Cloud
 
