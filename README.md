@@ -159,6 +159,10 @@ jira-gate issue create --project PROJ --summary "New feature" --issue-type Story
 # Update an issue
 jira-gate issue update PROJ-123 --summary "Updated summary"
 jira-gate issue update PROJ-123 --description "Updated description"
+
+# Create a subtask under a parent issue
+jira-gate issue create-subtask --parent PROJ-123 --summary "Implement unit tests"
+jira-gate issue create-subtask --parent PROJ-123 --summary "Code review" --description "Review changes"
 ```
 
 ### Project Commands

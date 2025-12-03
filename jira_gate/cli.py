@@ -250,6 +250,34 @@ def issue_update(issue_key, summary, description, config):
         sys.exit(1)
 
 
+@issue.command('create-subtask')
+@click.option('--parent', required=True, help='Parent issue key (e.g., PROJ-123)')
+@click.option('--summary', required=True, help='Subtask summary')
+@click.option('--description', default='', help='Subtask description')
+@click.option('--config', default=None, help='Custom config file path')
+def issue_create_subtask(parent, summary, description, config):
+    """Create a subtask under a parent issue"""
+    jira = get_jira_client(config)
+    try:
+        # Get the parent issue to extract project information
+        parent_issue = jira.issue(parent)
+        project_key = parent_issue.fields.project.key
+
+        # Create the subtask
+        new_subtask = jira.create_issue(
+            project=project_key,
+            summary=summary,
+            description=description,
+            issuetype={'name': 'Sub-task'},
+            parent={'key': parent}
+        )
+        click.echo(f"Subtask created successfully: {new_subtask.key}")
+        click.echo(f"Parent issue: {parent}")
+    except JIRAError as e:
+        click.echo(f"Error: {e.text}", err=True)
+        sys.exit(1)
+
+
 @main.group()
 def project():
     """Manage JIRA projects"""
