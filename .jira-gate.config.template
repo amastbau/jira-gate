@@ -1,0 +1,16 @@
+[jira]
+# Your JIRA server URL (e.g., https://your-domain.atlassian.net)
+server =
+
+# Authentication Method - Choose ONE of the following:
+
+# Option 1: Personal Access Token (PAT) - Recommended for JIRA Data Center/Server
+# Generate at: JIRA Settings > Personal Access Tokens
+# Uncomment and fill in if using PAT:
+# pat =
+
+# Option 2: Email + API Token - Common for JIRA Cloud
+# Generate API token at: https://id.atlassian.com/manage-profile/security/api-tokens
+# Uncomment and fill in if using Email + API Token:
+# email =
+# api_token =
